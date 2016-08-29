@@ -9,3 +9,31 @@
 .font11 {
 	font-size: 11px;
 }
+
+.previsao-tempo {
+	padding-top: 3%;
+}
+
+.ir-praia {
+	padding-top: 7%;
+}
+
+.temperatura-min {
+	margin-left: 5px;
+	text-align: center;
+	font-size: 33px;
+	color: #95b9ff;
+	padding-top: 10%;
+}
+
+.temperatura-max {
+	margin-left: 5px;
+	text-align: center;
+	font-size: 33px;
+	color: #ff5555;
+	padding-top: 10%;
+}
+
+.font25 {
+	font-size: 25px;
+}
