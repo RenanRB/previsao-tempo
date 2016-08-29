@@ -99,7 +99,7 @@
                                     </div>
 									<div class="box-body col-md-3">
                                      
-                                    	<button class="form-control" type="button" >Salvar como cidade favorita</button>
+                                    	<button class="form-control" type="button" onclick="setLocalStorageData(estado.value, cidade.value);">Salvar como cidade favorita</button>
                                             
                                     </div>
                                 </form>
@@ -121,7 +121,7 @@
                                     <div class="row">
                                         <div class="col-md-3 col-sm-6 col-xs-12">
                                             <div class="info-box bg-green box-temperatura">
-                                                <span class="icon-rainy icon-night font-size-temper"></span>
+                                                <span id="iconPrevisaoTempo0" class="font11"></span>
                                                 <div class="info-box-content">
                                                     <span class="info-box-text" id="diaPrevisaoTempo0">Aguardando dados</span>
                                                     <span class="info-box-text normal-space" id="previsaoTempo0">Aguardando dados</span>
@@ -130,7 +130,7 @@
                                         </div>
                                         <div class="col-md-3 col-sm-6 col-xs-12">
                                             <div class="info-box bg-green box-temperatura">
-                                                <span class="icon-rainy icon-night font-size-temper"></span>
+                                                <span id="iconPrevisaoTempo1" class="font11"></span>
                                                 <div class="info-box-content">
                                                     <span class="info-box-text" id="diaPrevisaoTempo1">Aguardando dados</span>
                                                     <span class="info-box-text normal-space" id="previsaoTempo1">Aguardando dados</span>
@@ -139,7 +139,7 @@
                                         </div>
                                         <div class="col-md-3 col-sm-6 col-xs-12">
                                             <div class="info-box bg-green box-temperatura">
-                                                <span class="icon-rainy icon-night font-size-temper"></span>
+                                                <span id="iconPrevisaoTempo2" class="font11"></span>
                                                 <div class="info-box-content">
                                                     <span class="info-box-text" id="diaPrevisaoTempo2">Aguardando dados</span>
                                                     <span class="info-box-text normal-space" id="previsaoTempo2">Aguardando dados</span>
@@ -148,7 +148,7 @@
                                         </div>
                                         <div class="col-md-3 col-sm-6 col-xs-12">
                                             <div class="info-box bg-green box-temperatura">
-                                                <span class="icon-rainy icon-night font-size-temper"></span>
+                                                <span id="iconPrevisaoTempo3" class="font11"></span>
                                                 <div class="info-box-content">
                                                     <span class="info-box-text" id="diaPrevisaoTempo3">Aguardando dados</span>
                                                     <span class="info-box-text normal-space" id="previsaoTempo3">Aguardando dados</span>
@@ -175,7 +175,7 @@
                                     <div class="row">
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <div class="info-box bg-green box-temperatura">
-                                                <span class="icon-rainy icon-night font-size-temper"></span>
+                                                <span class="icon-frosty font-size-temper"></span>
                                                 <div class="info-box-content">
                                                     <span class="info-box-text" id="tempMinDia"></span>
                                                     <span class="info-box-text" id="tempMin"></span>
@@ -184,7 +184,7 @@
                                         </div>
                                         <div class="col-md-6 col-sm-6 col-xs-12">
                                             <div class="info-box bg-green box-temperatura">
-                                                <span class="icon-rainy icon-night font-size-temper"></span>
+                                                <span class="icon-sun font-size-temper"></span>
                                                 <div class="info-box-content">
                                                     <span class="info-box-text" id="tempMaxDia"></span>
                                                     <span class="info-box-text" id="tempMax"></span>
@@ -208,10 +208,10 @@
                                 <div class="box-footer">
                                     <div class="row">
                                         <div class="col-md-12 col-sm-12 col-xs-12">
-                                            <div class="info-box bg-green box-temperatura">
+                                            <div class="info-box bg-green box-temperatura"  id="irPraia">
                                                 <span class="icon-rainy icon-night font-size-temper"></span>
                                                 <div class="info-box-content">
-                                                    <span class="info-box-text normal-space" id="irPraia">Aguardando dados</span>
+                                                    <span class="info-box-text normal-space">Aguardando dados</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -268,29 +268,43 @@
 			$(document).ready(function(){
 				previsao($('#cidade').val());
 			});
-		
+
             new dgCidadesEstados({
 				cidade: document.getElementById('cidade'),
 				estado: document.getElementById('estado'),
-				estadoDefault: 'SC',
-				cidadeDefault: 'Blumenau'
+				estadoDefault: localStorage.getItem("PREVISAO_ESTADO") || 'SC',
+				cidadeDefault: localStorage.getItem("PREVISAO_CIDADE") || 'Blumenau'
 			});
 			
             $(function() {
-                //Initialize Select2 Elements
                 $(".select2").select2();
             });
-			
-			 
-            
+
+            var climas = {
+                storm: '<span class="basecloud"></span><span class="icon-thunder"></span>',
+                snow: '<span class="basecloud"></span><span class="icon-snowy"></span>',
+                hail: '<span class="basecloud"></span><span class="icon-hail"></span>',
+                rain: '<span class="basecloud"></span><span class="icon-rainy"></span>',
+                fog: '<span class="icon-mist"></span>',
+                clear_day: '<span class="icon-sun"></span>',
+                clear_night: '<span class="icon-moon"></span>',
+                cloud: '<span class="icon-cloud"></span>',
+                cloudly_day: '<span class="icon-cloud"></span><span class="icon-sunny"></span>',
+                cloudly_night: '<span class="icon-cloud"></span><span class="icon-night"></span>',
+                none_day : '<span class="icon-sun"></span>',
+                none_night : '<span class="icon-moon"></span>'
+            };
+
+
 			function previsao(cidade) {
-				let dadosGrafico = [];
-				let tempMin = {temp: 50, dia: undefined};
-				let tempMax = {temp: -50, dia: undefined};
-				let ano;
-				let tempo = undefined;
-				let data;
-				let praia = false;
+				var dadosGrafico = [];
+                var tempMin = {temp: 50, dia: undefined};
+                var tempMax = {temp: -50, dia: undefined};
+                var ano;
+                var tempo = undefined;
+                var data;
+                var praia = false;
+
 				$.ajax({
 					url: 'http://api.hgbrasil.com/weather/?format=json-cors&city_name='+cidade+'&key=8c1a92ae&locale=pt-br',
 					dataType: 'json',
@@ -302,6 +316,8 @@
 							if (i < 4) {
 								$('#previsaoTempo'+i).html(tempo.description);
 								$('#diaPrevisaoTempo'+i).html(i == 0 ? 'Hoje' : tempo.weekday);
+                                $('#iconPrevisaoTempo'+i).html(climas[tempo.condition]);
+
 							}
 							
 							if (tempo.min < tempMin.temp) {
@@ -322,23 +338,25 @@
 						
 						$('#tempMinDia').html(tempMin.dia);
 						$('#tempMin').html(tempMin.temp + 'º');
-						
+
 						$('#tempMaxDia').html(tempMax.dia);
 						$('#tempMax').html(tempMax.temp + 'º');
-						
+
 						$.ajax({
 							url: 'http://api.hgbrasil.com/weather/?format=json-cors&city_name=Balneário%20Camboriú&key=8c1a92ae&locale=pt-br',
 							dataType: 'json',
-							success: function(dados) {
+							success: function(dadosPraia) {
+                                var tempoPraia = dadosPraia.results.forecast[i];
+
 								for (i = 0; i < 7; i++) {
-									if (tempo.weekday == 'Sab' || tempo.weekday == 'Dom' && ((tempo.max - tempo.min) + tempo.min) >= 25)
+									if (tempoPraia.weekday == 'Sab' || tempoPraia.weekday == 'Dom' && tempoPraia.max >= 25 && tempoPraia.condition == 'clear_day')
 										praia = true;
 								}
 								
 								if (praia) {
-									$('#irPraia').html('Ótimo fim de semana para ir a praia!');
+									$('#irPraia').html('<span class="icon-sun font-size-temper"></span><div class="info-box-content"><span class="info-box-text normal-space">Ótimo fim de semana para ir a praia!</span></div>');
 								} else {
-									$('#irPraia').html('Não é um bom fim de semana para ir a praia!');
+									$('#irPraia').html('<span id="iconPrevisaoTempo2" class="font11"><span class="basecloud"></span><span class="icon-thunder"></span></span><div class="info-box-content"><span class="info-box-text normal-space">Não é um bom fim de semana para ir a praia!</span></div>');
 								}
 							}
 						});
@@ -355,7 +373,23 @@
 						
 					}
 				});
-			}        
+			}
+
+            function supportsHTML5Storage() {
+                try {
+                    return 'localStorage' in window && window['localStorage'] !== null;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function setLocalStorageData(estado, cidade) {
+                if (!supportsHTML5Storage()) {
+                    return false;
+                }
+                localStorage.setItem("PREVISAO_ESTADO", estado);
+                localStorage.setItem("PREVISAO_CIDADE", cidade);
+            }
         
         </script>
     </body>
